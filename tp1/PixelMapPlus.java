@@ -151,24 +151,7 @@ public class PixelMapPlus extends PixelMap implements ImageOperations
     for (int row = 0; row < height; row++) {
       for (int col = 0; col < width; col++) {
         if (!modified[row][col]) {
-          switch (imageType) {
-          case BW :
-            imageData[row][col] = new BWPixel();
-            break;
-
-          case Gray :
-            imageData[row][col] = new GrayPixel();
-            break;
-
-          case Color :
-            imageData[row][col] = new ColorPixel();
-            break;
-
-          case Transparent :
-            imageData[row][col] = new TransparentPixel();
-            break;
-
-          }
+          imageData[row][col] = blankPixel();
         }
       }
     }
@@ -234,24 +217,49 @@ public class PixelMapPlus extends PixelMap implements ImageOperations
    */
   public void crop(int h, int w)
   {
-
+    if (h < 0 || w < 0) {
+      throw new IllegalArgumentException();
+    }
+    AbstractPixel[][] newData = new AbstractPixel[h][w];
+    for (int row = 0; row < h; row++) {
+      for (int col = 0; col < w; col++) {
+        if (row >= height || col >= width) {
+          newData[row][col] = blankPixel();
+        }
+        else {
+          newData[row][col] = imageData[row][col];
+        }
+      }
+    }
+    width = w;
+    height = h;
+    imageData = newData;
   }
 
-  /**
-   * Effectue une translation de l'image
-   */
+/**
+ * Effectue une translation de l'image
+ */
   public void translate(int rowOffset, int colOffset)
   {
-    // compl�ter
-
+    AbstractPixel[][] newData = new AbstractPixel[height][width];
+    for (int row = 0;row < height ; row++ ) {
+      for (int col = 0; col < width; col++ ) {
+        if (row - rowOffset >= height || row - rowOffset < 0 || col - colOffset >= width || col - colOffset < 0) {
+          newData[row][col] = blankPixel();
+        } else {
+          newData[row][col] = imageData[row - rowOffset][col - colOffset];
+        }
+      }
+    }
+    imageData = newData;
   }
 
-  /**
-   * Effectue un zoom autour du pixel (x,y) d'un facteur zoomFactor
-   * @param x : colonne autour de laquelle le zoom sera effectue
-   * @param y : rangee autour de laquelle le zoom sera effectue
-   * @param zoomFactor : facteur du zoom a effectuer. Doit etre superieur a 1
-   */
+/**
+ * Effectue un zoom autour du pixel (x,y) d'un facteur zoomFactor
+ * @param x : colonne autour de laquelle le zoom sera effectue
+ * @param y : rangee autour de laquelle le zoom sera effectue
+ * @param zoomFactor : facteur du zoom a effectuer. Doit etre superieur a 1
+ */
   public void zoomIn(int x, int y, double zoomFactor) throws IllegalArgumentException
   {
     if (zoomFactor < 1.0)
@@ -260,8 +268,7 @@ public class PixelMapPlus extends PixelMap implements ImageOperations
     int w = (int)((double)width / zoomFactor);
     int h = (int)((double)height / zoomFactor);
 
-		int botY, topY, leftX, rightX;
-
+    int botY, topY, leftX, rightX;
     if (x + w > width) {
       rightX = width;
       leftX = rightX - w;
@@ -294,12 +301,33 @@ public class PixelMapPlus extends PixelMap implements ImageOperations
         dataCpy[row - botY][col - leftX] = imageData[row][col];
       }
     }
+
     int tempW = width;
     int tempH = height;
     width = w;
     height = h;
     imageData = dataCpy;
     this.resize(tempW, tempH);
-
   }
+
+  public AbstractPixel blankPixel()
+  {
+    switch (imageType) {
+    case BW :
+      return new BWPixel();
+
+    case Gray :
+      return new GrayPixel();
+
+    case Color :
+      return new ColorPixel();
+
+    case Transparent :
+      return new TransparentPixel();
+
+    default :
+      return null;
+    }
+  }
+
 }

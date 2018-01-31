@@ -43,7 +43,7 @@ public class Main
 
 		PixelMapPlus pmp = new PixelMapPlus("./ed.ppm");
 		PixelMapPlus hpmp = new PixelMapPlus( pmp );
-		hpmp.zoomIn(0, 0, 2.0);
+		hpmp.translate(100,100);
 		wName = "Edsger Dijkstra";
 		new DisplayImageWindow(wName, hpmp);
 		/*
