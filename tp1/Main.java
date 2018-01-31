@@ -43,11 +43,6 @@ public class Main
 
 		PixelMapPlus pmp = new PixelMapPlus("./ed.ppm");
 		PixelMapPlus hpmp = new PixelMapPlus( pmp );
-		hpmp.translate(100,100);
-		wName = "Edsger Dijkstra";
-		new DisplayImageWindow(wName, hpmp);
-		/*
-		PixelMapPlus hpmp = new PixelMapPlus( pmp );
 		hpmp.zoomIn(0, 0, 2);
 		hpmp.resize(hpmp.width/2, hpmp.height/2);
 
@@ -73,6 +68,5 @@ public class Main
 
 		wName = "Edsger Dijkstra";
 		new DisplayImageWindow(wName, pmp);
-	*/
 	}
 }
