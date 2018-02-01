@@ -121,40 +121,28 @@ public class PixelMapPlus extends PixelMap implements ImageOperations
    */
   public void rotate(int x, int y, double angleRadian)
   {
-    AbstractPixel[][] dataCpy = imageData;
-    boolean[][] modified = new boolean[height][width];
+    AbstractPixel[][] dataCpy = new AbstractPixel[height][width];
     for (int row = 0; row < height; row++) {
       for (int col = 0; col < width; col++) {
-        modified[row][col] = false;
-      }
-    }
+        int ancientX = (int)(Math.cos(angleRadian) * (double)col +
+                             Math.sin(angleRadian) * (double)row -
+                             Math.cos(angleRadian) * (double)x -
+                             Math.sin(angleRadian) * (double)y + (double)x);
 
-    for (int row = 0; row < height; row++) {
-      for (int col = 0; col < width; col++) {
-        int newX = (int)(Math.cos(angleRadian) * (double)x -
-                         Math.sin(angleRadian) * (double)y -
-                         Math.cos(angleRadian) * (double)col +
-                         Math.sin(angleRadian) * (double)row + col);
+        int ancientY = (int)((0.0 - Math.sin(angleRadian)) * (double)col +
+                             Math.cos(angleRadian) * (double)row +
+                             Math.sin(angleRadian) * (double)x -
+                             Math.cos(angleRadian) * (double)y + (double)y);
 
-        int newY = (int)(Math.sin(angleRadian) * (double)x +
-                         Math.cos(angleRadian) * (double)y -
-                         Math.sin(angleRadian) * (double)col -
-                         Math.cos(angleRadian) * (double)row + row);
-
-        if (!(newX >= width || newX < 0 || newY < 0 || newY >= height)) {
-          imageData[newY][newX] = dataCpy[row][col];
-          modified[newY][newX] = true;
+        if (!(ancientX >= width || ancientX < 0 || ancientY < 0 || ancientY >= height - 1)) {
+          dataCpy[row][col] = imageData[ancientY][ancientX];
+        }
+        else {
+          dataCpy[row][col] = blankPixel();
         }
       }
     }
-
-    for (int row = 0; row < height; row++) {
-      for (int col = 0; col < width; col++) {
-        if (!modified[row][col]) {
-          imageData[row][col] = blankPixel();
-        }
-      }
-    }
+    imageData = dataCpy;
   }
 
   /**
@@ -242,11 +230,12 @@ public class PixelMapPlus extends PixelMap implements ImageOperations
   public void translate(int rowOffset, int colOffset)
   {
     AbstractPixel[][] newData = new AbstractPixel[height][width];
-    for (int row = 0;row < height ; row++ ) {
-      for (int col = 0; col < width; col++ ) {
+    for (int row = 0; row < height; row++) {
+      for (int col = 0; col < width; col++) {
         if (row - rowOffset >= height || row - rowOffset < 0 || col - colOffset >= width || col - colOffset < 0) {
           newData[row][col] = blankPixel();
-        } else {
+        }
+        else {
           newData[row][col] = imageData[row - rowOffset][col - colOffset];
         }
       }
