@@ -131,11 +131,13 @@ public class FormValidator
    */
   private static String generateCode(int length)
   {
+    int NB_LETTRE_ALPHABET = 26;
+    int POSITION_ASCII_A = 65;
     if (length > 10) return null;
     char[] charKey = new char[length];
     Random generator = new Random(System.nanoTime());
     for (int i = 0; i < charKey.length; i++) {
-      charKey[i] = (char)(generator.nextInt(26) + 65);
+      charKey[i] = (char)(generator.nextInt(NB_LETTRE_ALPHABET) + POSITION_ASCII_A);
     }
 
     return new String(charKey);
