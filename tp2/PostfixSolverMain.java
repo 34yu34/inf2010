@@ -11,21 +11,21 @@ public class PostfixSolverMain
 
     // L'expression est separee en tokens selon les espaces
     for (String token : s.split("\\s")) {
-      if (s != "*" || s != "+" || s != "-" || s != "/")
+			if (!token.equals("*") && !token.equals("+") && !token.equals("-") && !token.equals("/"))
         stack.push(Double.parseDouble(token));
       else {
         double val1 = stack.pop();
         double val2 = stack.pop();
-        if (token == "+") {
+        if (token.equals("+")) {
           stack.push(val1 + val2);
         }
-        else if (token == "*") {
+        else if (token.equals("*")) {
           stack.push(val1 * val2);
         }
-        else if (token == "-") {
+        else if (token.equals("-")) {
           stack.push(val2 - val1);
         }
-        else if (token == "/") {
+        else if (token.equals("/")) {
           stack.push(val2 / val1);
         }
       }
