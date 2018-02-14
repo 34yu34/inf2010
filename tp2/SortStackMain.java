@@ -4,8 +4,8 @@ import java.util.Stack;
 
 public class SortStackMain
 {
-  static final int COUNT = 30;
-  static final int MAX_VALUE = 1000;
+  static final int COUNT = 1000;
+  static final int MAX_VALUE = 10000;
 
   public static void main(String[] args)
   {
@@ -42,33 +42,67 @@ public class SortStackMain
 
   private static int size(Stack<Integer> stack)
   {
-    return stack.size();
+    Stack<Integer> stack2 = (Stack<Integer> )stack.clone();
+    int count = 0;
+    while (!stack2.empty()) {
+      stack2.pop();
+      count++;
+    }
+    return count;
   }
 
   static Stack<Integer> sortStack(Stack<Integer> stack)
   {
-    int[] value = new int[stack.size()];
-    for (int i = 0; i < value.length; i++) {
-      value[i] = stack.pop();
-    }
+    Stack<Integer> stack2 = new Stack<Integer>();
     // Bubble sort
     int transformation = -1;
-    int temp;
-    int size = value.length;
+    int value1;
+    int value2;
+    int last;
+    int size = stack.size();
     while (transformation != 0) {
       transformation = 0;
-      for (int i = 0; i < size - 1; i++) {
-        if (value[i] > value[i + 1]) {
-          temp = value[i];
-          value[i] = value[i + 1];
-          value[i + 1] = temp;
-          transformation++;
+      value1 = stack.pop();
+      value2 = stack.pop();
+      last = 2;
+      for (int i = 0; i < size - 2; i++) {
+        if (value1 > value2) {
+          stack2.push(value2);
+          if (last == 2) {
+            transformation++;
+          }
+          value2 = stack.pop();
+          last = 2;
+        } else if (value1 == value2) {
+          stack2.push(value1);
+          value1 = stack.pop();
+          last = 1;
+        } else {
+          stack2.push(value1);
+          if (last == 1) {
+            transformation++;
+          }
+          value1 = stack.pop();
+          last = 1;
         }
       }
+      while (!stack2.empty()) {
+        if (value1 > value2) {
+          stack.push(value1);
+          value1 = stack2.pop();
+        } else {
+          stack.push(value2);
+          value2 = stack2.pop();
+        }
+      }
+      if (value1 > value2) {
+        stack.push(value1);
+        stack.push(value2);
+      } else {
+        stack.push(value2);
+        stack.push(value1);
+      }
       size--;
-    }
-    for (int i = value.length - 1; i >= 0; i--) {
-      stack.push(value[i]);
     }
     return stack;
   }

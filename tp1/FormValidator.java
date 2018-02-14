@@ -155,11 +155,11 @@ public class FormValidator
 
     Random generator = new Random(System.nanoTime());
 
-		for (int i = 0; i < charTransform.length ; i++) {
-			charTransform[i] = generator.nextInt(10);
-		}
+    for (int i = 0; i < charTransform.length; i++) {
+      charTransform[i] = generator.nextInt(10);
+    }
 
-		return charTransform;
+    return charTransform;
 
   }
 
