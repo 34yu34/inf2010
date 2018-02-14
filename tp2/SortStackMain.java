@@ -4,8 +4,8 @@ import java.util.Stack;
 
 public class SortStackMain
 {
-  static final int COUNT = 1000;
-  static final int MAX_VALUE = 10000;
+  static final int COUNT = 300_000;
+  static final int MAX_VALUE = 1_000_000;
 
   public static void main(String[] args)
   {
@@ -53,57 +53,67 @@ public class SortStackMain
 
   static Stack<Integer> sortStack(Stack<Integer> stack)
   {
-    Stack<Integer> stack2 = new Stack<Integer>();
-    // Bubble sort
-    int transformation = -1;
-    int value1;
-    int value2;
-    int last;
-    int size = stack.size();
-    while (transformation != 0) {
-      transformation = 0;
-      value1 = stack.pop();
-      value2 = stack.pop();
-      last = 2;
-      for (int i = 0; i < size - 2; i++) {
-        if (value1 > value2) {
-          stack2.push(value2);
-          if (last == 2) {
-            transformation++;
-          }
-          value2 = stack.pop();
-          last = 2;
-        } else if (value1 == value2) {
-          stack2.push(value1);
-          value1 = stack.pop();
-          last = 1;
-        } else {
-          stack2.push(value1);
-          if (last == 1) {
-            transformation++;
-          }
-          value1 = stack.pop();
-          last = 1;
-        }
+    Stack<Integer> stackLeft = new Stack<Integer>();
+    Stack<Integer> stackRight = new Stack<Integer>();
+    int count = 0;
+    while (!stack.empty()) {
+      stackLeft.push(stack.pop());
+      count++;
+      if (!stack.empty()) {
+        stackRight.push(stack.pop());
+        count++;
       }
-      while (!stack2.empty()) {
-        if (value1 > value2) {
-          stack.push(value1);
-          value1 = stack2.pop();
-        } else {
-          stack.push(value2);
-          value2 = stack2.pop();
-        }
-      }
-      if (value1 > value2) {
-        stack.push(value1);
-        stack.push(value2);
-      } else {
-        stack.push(value2);
-        stack.push(value1);
-      }
-      size--;
     }
+    if (count > 2) {
+      sortStack(stackLeft);
+      sortStack(stackRight);
+    }
+    Stack<Integer> tempStack = new Stack<Integer>();
+    boolean rightEmpty = false;
+    boolean leftEmpty = false;
+    int valLeft = stackLeft.pop();
+    int valRight;
+    if (count > 1) {
+      valRight = stackRight.pop();
+    } else {
+      rightEmpty = true;
+      valRight = 0;
+    }
+    while (!leftEmpty && !rightEmpty) {
+      if (valRight < valLeft) {
+        tempStack.push(valRight);
+        if (!stackRight.empty()) {
+          valRight = stackRight.pop();
+        } else {
+          rightEmpty = true;
+        }
+      } else {
+        tempStack.push(valLeft);
+        if (!stackLeft.empty()) {
+          valLeft = stackLeft.pop();
+        } else {
+          leftEmpty = true;
+        }
+      }
+    }
+    if (rightEmpty) {
+      tempStack.push(valLeft);
+      transfertStack(tempStack, stackLeft);
+    } else {
+      tempStack.push(valRight);
+      transfertStack(tempStack, stackRight);
+    }
+    transfertStack(stack, tempStack);
     return stack;
   }
+  /*********************************************************************
+  * Transfert whats in giver on top of receiver
+  *********************************************************************/
+  static void transfertStack(Stack<Integer> receiver, Stack<Integer> giver)
+  {
+    while (!giver.empty()) {
+      receiver.push(giver.pop());
+    }
+  }
+
 }
