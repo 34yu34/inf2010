@@ -63,6 +63,9 @@ public class Node
     this.enfants.removeAll(enfants);
   }
 
+  /*********************************************************************
+  * fuse two node of equal order
+  *********************************************************************/
   public Node fusion(Node autre) throws DifferentOrderTrees
   {
     if (this.ordre != autre.ordre) {
@@ -84,6 +87,9 @@ public class Node
     return null;
   }
 
+  /*********************************************************************
+  * Swap this node with its parent
+  *********************************************************************/
   private void moveUp()
   {
     if (this.parent == null) {
@@ -96,8 +102,9 @@ public class Node
     dad.enfants = this.enfants;
     this.parent = grandParent;
     this.enfants = sibbling;
-    dad.ordre -= 1;
-    this.ordre += 1;
+    int tempOrdre = dad.ordre;
+    dad.ordre = this.ordre;
+    this.ordre = tempOrdre;
     this.removeEnfant(this);
     this.addEnfant(dad);
     if (grandParent != null) {
@@ -106,6 +113,10 @@ public class Node
     }
   }
 
+  /*********************************************************************
+  * Grab the node to delete and swap it to the top then returns all the children
+  * changes all the children parent node to null
+  *********************************************************************/
   public ArrayList<Node> delete()
   {
     Node currNode = this;
@@ -133,6 +144,11 @@ public class Node
     return null;
   }
 
+  /*********************************************************************
+  * Heap sort : pop the root node to put it in the result
+  * then grab the biggest element in the children node and
+  * replace the root with it. repeat until node is empty.
+  *********************************************************************/
   public ArrayList<Integer> getElementsSorted()
   {
     ArrayList<Integer> sol = new ArrayList();

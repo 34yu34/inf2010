@@ -9,21 +9,48 @@ public class Monceau
     arbres = new ArrayList<Node>();
   }
 
+  /*********************************************************************
+  * Insertion sort to make sure all nodes are in good order
+  * The variable that is compare is order and not their value
+  *********************************************************************/
+  public void setArbres(ArrayList<Node> arbre)
+  {
+    for (int i = 0; i < arbre.size(); i++) {
+      int min = arbre.get(0).ordre;
+      int indexMin = 0;
+      for (int j = arbre.size() - i - 1; j >= 0; j--) {
+        if (arbre.get(j).ordre < min) {
+          min = arbre.get(0).ordre;
+          indexMin = j;
+        }
+      }
+      Node nodeMin = arbre.remove(indexMin);
+      arbre.add(nodeMin);
+    }
+    this.arbres = arbre;
+  }
+
+  /*********************************************************************
+  * permit the fusion of two Monceau
+  * it follow a list of rules to make sure they stay in order
+  * The reason fo the length is to reduce the complexity as much as possible
+  *********************************************************************/
   public void fusion(Monceau autre)
   {
-    // Pour simplifier le tout on garde les Noeuds en ordres
     Node retenue = null;
     int i = 0;
     int j = 0;
     int ordre = 0;
     try {
       while (j < autre.arbres.size()) {
+        // if we finish our current arbres we blindly add autre element
         if (i >= this.arbres.size()) {
           this.arbres.add(autre.arbres.get(j));
           j++;
         } else {
           Node currNode = this.arbres.get(i);
           Node otherNode = autre.arbres.get(j);
+          // we check if they are the same order to choose wich one to add
           if (currNode.ordre == ordre && otherNode.ordre == ordre) {
             if (retenue != null) {
               retenue = retenue.fusion(otherNode);
@@ -37,6 +64,7 @@ public class Monceau
               retenue = retenue.fusion(otherNode);
             } else {
               this.arbres.add(i, otherNode);
+              i++;
             }
             j++;
           } else if (currNode.ordre == ordre) {
@@ -45,9 +73,12 @@ public class Monceau
             } else {
               i++;
             }
+            // If none of them are of good order and there is a retenue
+            // we add the retenue
           } else if (retenue != null) {
             this.arbres.add(i, retenue);
             i++;
+            retenue = null;
           }
           ordre++;
         }
@@ -70,6 +101,9 @@ public class Monceau
     }
   }
 
+  /*********************************************************************
+  * Creates a Simple Monceaux to fuse the current one with
+  *********************************************************************/
   public void insert(int val)
   {
     Node simpleNode = new Node(val);
@@ -78,20 +112,26 @@ public class Monceau
     this.fusion(adder);
   }
 
+  /*********************************************************************
+  * This delete all the node of the value val
+  *********************************************************************/
   public boolean delete(int val)
   {
     boolean found = false;
-    /*for (Node node : this.arbres) {
-       Node currNode = node.findValue(val);
-       while (currNode != null) {
-        ArrayList<Node> arbre = node.removeEnfant(currNode);
+    for (Node node : this.arbres) {
+      Node currNode = node.findValue(val);
+      if (currNode != null) {
+        this.arbres.remove(node);
+        ArrayList<Node> arbre = currNode.delete();
         Monceau fusionneur = new Monceau();
-        fusionneur.arbres = arbre;
-        currNode = node.findValue(val);
-       }
-       node.print();
-       found = currNode != null;
-       }*/
+        // this call insertion sort to make sure it is in good order
+        fusionneur.setArbres(arbre);
+        this.fusion(fusionneur);
+        found = true;
+        this.delete(val);
+        break;
+      }
+    }
     return found;
   }
 
